@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { UserButton } from "@clerk/nextjs";
 import Link from "next/link";
+import Image from "next/image";
 import BioForm from "./_components/BioForm";
 import NewPostForm from "./_components/NewPostForm";
 import SubscriptionPriceForm from "./_components/SubscriptionPriceForm";
@@ -25,7 +26,17 @@ export default async function AthleteDashboard() {
   if (!user) redirect("/onboarding");
   if (user.role !== "ATHLETE") redirect("/dashboard/user");
 
-  const totalStudents = user.courses.reduce((acc, c) => acc + c._count.purchases, 0);
+  const totalStudents = user.courses.reduce((acc: number, c: { _count: { purchases: number } }) => acc + c._count.purchases, 0);
+
+  const recentPurchases = await db.purchase.findMany({
+    where: { course: { athleteId: user.id } },
+    include: {
+      user: { select: { id: true, name: true, imageUrl: true } },
+      course: { select: { title: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -101,6 +112,38 @@ export default async function AthleteDashboard() {
             )}
           </div>
         </div>
+
+        {/* Students */}
+        {recentPurchases.length > 0 && (
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-6 py-4 border-b">
+              <h2 className="font-semibold text-gray-900">Recent Students</h2>
+            </div>
+            <div className="divide-y">
+              {recentPurchases.map((purchase) => (
+                <div key={purchase.id} className="flex items-center gap-3 px-6 py-3">
+                  {purchase.user.imageUrl ? (
+                    <Image
+                      src={purchase.user.imageUrl}
+                      alt={purchase.user.name ?? "User"}
+                      width={36}
+                      height={36}
+                      className="rounded-full flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">
+                      {purchase.user.name?.[0] ?? "U"}
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-sm font-medium text-gray-900">{purchase.user.name ?? "User"}</p>
+                    <p className="text-xs text-gray-400">{purchase.course.title}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Posts */}
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
