@@ -7,9 +7,6 @@ const nextConfig: NextConfig = {
       { hostname: "images.clerk.dev" },
     ],
   },
-  outputFileTracingIncludes: {
-    "/**": ["./src/generated/prisma/**/*"],
-  },
 };
 
 export default nextConfig;
