@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Ruolo dell'utente nella piattaforma
+enum Role {
+  USER    // chi acquista corsi
+  ATHLETE // chi pubblica corsi
+}
+
+// Utente (sia atleta che consumatore)
+model User {
+  id       String  @id @default(cuid())
+  clerkId  String  @unique
+  email    String  @unique
+  name     String?
+  imageUrl String?
+  role     Role    @default(USER)
+  bio               String?
+  subscriptionPrice Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Se è un atleta: i suoi corsi e post
+  courses Course[]
+  posts   Post[]
+
+  // Se è un utente: i suoi acquisti, abbonamenti e commenti
+  purchases     Purchase[]
+  subscriptions Subscription[]
+  comments      Comment[]
+
+  // Chi è abbonato a questo atleta
+  subscribers Subscription[] @relation("AthleteSubscriptions")
+}
+
+// Corso creato da un atleta
+model Course {
+  id          String  @id @default(cuid())
+  title       String
+  description String?
+  imageUrl    String?
+  price       Float?
+  isPublished Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  athleteId String
+  athlete   User   @relation(fields: [athleteId], references: [id])
+
+  videos    Video[]
+  purchases Purchase[]
+}
+
+// Video all'interno di un corso
+model Video {
+  id            String  @id @default(cuid())
+  title         String
+  description   String?
+  muxAssetId    String?
+  muxPlaybackId String?
+  duration      Int?
+  position      Int
+  isFree        Boolean @default(false)
+  isPublished   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+
+// Acquisto di un corso da parte di un utente
+model Purchase {
+  id String @id @default(cuid())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+  courseId String
+  course   Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId])
+}
+
+// Post dell'atleta (testo + immagine opzionale)
+model Post {
+  id          String  @id @default(cuid())
+  content     String
+  imageUrl    String?
+  isPublished Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  athleteId String
+  athlete   User      @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  comments  Comment[]
+}
+
+// Commento di un utente su un post
+model Comment {
+  id      String @id @default(cuid())
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  postId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Abbonamento mensile al canale di un atleta
+model Subscription {
+  id                   String  @id @default(cuid())
+  stripeSubscriptionId String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    String
+  user      User   @relation(fields: [userId], references: [id])
+  athleteId String
+  athlete   User   @relation("AthleteSubscriptions", fields: [athleteId], references: [id])
+
+  @@unique([userId, athleteId])
+}
