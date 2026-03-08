@@ -31,7 +31,7 @@ export default async function UserDashboard() {
           <Link href="/athletes" className="text-sm text-blue-600 hover:underline">
             Explore athletes
           </Link>
-          <UserButton afterSignOutUrl="/" />
+          <UserButton />
         </div>
       </header>
       <main className="max-w-5xl mx-auto p-6">
