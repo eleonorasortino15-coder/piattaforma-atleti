@@ -43,6 +43,9 @@ export default async function AthleteDashboard() {
       <header className="bg-white border-b px-6 py-4 flex items-center justify-between">
         <span className="text-xl font-bold text-gray-900">⚡ AthletePro</span>
         <div className="flex items-center gap-4">
+          <Link href="/dashboard/profile" className="text-sm text-gray-500 hover:underline">
+            Edit profile
+          </Link>
           <Link href={`/athletes/${user.id}`} className="text-sm text-blue-600 hover:underline">
             View my profile →
           </Link>

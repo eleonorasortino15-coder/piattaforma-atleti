@@ -35,7 +35,12 @@ export default async function UserDashboard() {
         </div>
       </header>
       <main className="max-w-5xl mx-auto p-6">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome back!</h2>
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="text-2xl font-bold text-gray-800">Welcome back!</h2>
+          <Link href="/dashboard/profile" className="text-sm text-blue-600 hover:underline">
+            Edit profile →
+          </Link>
+        </div>
         <p className="text-gray-500 mb-8">Continue your training or explore new courses.</p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
