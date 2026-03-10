@@ -43,22 +43,24 @@ export default async function AthleteProfilePage({ params }: Props) {
   if (!athlete) notFound();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black text-white">
       {/* Navbar */}
-      <header className="bg-white border-b px-6 py-4 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold text-gray-900">⚡ AthletePro</Link>
-        <div className="flex gap-3">
+      <header className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
+        <Link href="/" className="text-xl font-bold">
+          <span className="text-blue-400">⚡</span> AthletePro
+        </Link>
+        <div className="flex gap-3 items-center">
           {currentUser ? (
             <Link
               href={currentUser.role === "ATHLETE" ? "/dashboard/athlete" : "/dashboard/user"}
-              className="text-sm text-blue-600 hover:underline px-4 py-2"
+              className="text-sm text-blue-400 hover:text-blue-300 transition px-4 py-2"
             >
               My Dashboard
             </Link>
           ) : (
             <>
-              <Link href="/sign-in" className="text-sm text-gray-600 hover:text-gray-900 px-4 py-2">Sign in</Link>
-              <Link href="/sign-up" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
+              <Link href="/sign-in" className="text-sm text-gray-400 hover:text-white transition px-4 py-2">Sign in</Link>
+              <Link href="/sign-up" className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-500 transition">
                 Get started
               </Link>
             </>
@@ -68,22 +70,22 @@ export default async function AthleteProfilePage({ params }: Props) {
 
       <main className="max-w-4xl mx-auto px-6 py-10">
         {/* Profilo */}
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 mb-8">
+        <div className="bg-gray-900 rounded-2xl border border-white/10 p-8 mb-8">
           <div className="flex items-center gap-6">
             {athlete.imageUrl ? (
               <Image src={athlete.imageUrl} alt={athlete.name ?? "Athlete"} width={96} height={96} className="rounded-full object-cover" />
             ) : (
-              <div className="w-24 h-24 rounded-full bg-blue-100 flex items-center justify-center text-3xl font-bold text-blue-600">
+              <div className="w-24 h-24 rounded-full bg-blue-500/20 flex items-center justify-center text-3xl font-bold text-blue-400">
                 {athlete.name?.[0] ?? "A"}
               </div>
             )}
             <div className="flex-1">
-              <h1 className="text-2xl font-bold text-gray-900">{athlete.name ?? "Athlete"}</h1>
-              <p className="text-blue-600 text-sm font-medium mt-0.5">WAKO Athlete</p>
-              {athlete.bio && <p className="text-gray-600 mt-3 text-sm leading-relaxed">{athlete.bio}</p>}
+              <h1 className="text-2xl font-bold text-white">{athlete.name ?? "Athlete"}</h1>
+              <p className="text-blue-400 text-sm font-medium mt-0.5">WAKO Athlete</p>
+              {athlete.bio && <p className="text-gray-400 mt-3 text-sm leading-relaxed">{athlete.bio}</p>}
               <div className="flex gap-4 mt-4 text-sm text-gray-500">
-                <span><strong className="text-gray-900">{athlete.courses.length}</strong> courses</span>
-                <span><strong className="text-gray-900">{athlete.posts.length}</strong> posts</span>
+                <span><strong className="text-white">{athlete.courses.length}</strong> courses</span>
+                <span><strong className="text-white">{athlete.posts.length}</strong> posts</span>
               </div>
               {athlete.subscriptionPrice && currentUser?.id !== athleteId && (
                 <div className="mt-4">
@@ -102,14 +104,14 @@ export default async function AthleteProfilePage({ params }: Props) {
         {/* Corsi */}
         {athlete.courses.length > 0 && (
           <section className="mb-10">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Courses</h2>
+            <h2 className="text-xl font-bold text-white mb-4">Courses</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {athlete.courses.map((course) => (
-                <div key={course.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5 hover:shadow-md transition">
-                  <h3 className="font-semibold text-gray-900 mb-1">{course.title}</h3>
-                  {course.description && <p className="text-sm text-gray-500 mb-3 line-clamp-2">{course.description}</p>}
+                <div key={course.id} className="bg-gray-900 rounded-xl border border-white/10 hover:border-blue-500/50 transition p-5">
+                  <h3 className="font-semibold text-white mb-1">{course.title}</h3>
+                  {course.description && <p className="text-sm text-gray-400 mb-3 line-clamp-2">{course.description}</p>}
                   <div className="flex items-center justify-between">
-                    <span className="text-lg font-bold text-gray-900">
+                    <span className="text-lg font-bold text-white">
                       {course.price ? `€${course.price}` : "Free"}
                     </span>
                     <BuyButton
@@ -131,15 +133,15 @@ export default async function AthleteProfilePage({ params }: Props) {
         {/* Post con commenti */}
         {athlete.posts.length > 0 && (
           <section>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Updates</h2>
+            <h2 className="text-xl font-bold text-white mb-4">Updates</h2>
             <div className="space-y-4">
               {athlete.posts.map((post) => (
-                <div key={post.id} className="bg-white rounded-xl border border-gray-200 shadow-sm p-5">
+                <div key={post.id} className="bg-gray-900 rounded-xl border border-white/10 p-5">
                   {post.imageUrl && (
                     <img src={post.imageUrl} alt="" className="w-full h-56 object-cover rounded-lg mb-4" />
                   )}
-                  <p className="text-gray-800 text-sm leading-relaxed">{post.content}</p>
-                  <p className="text-xs text-gray-400 mt-2">
+                  <p className="text-gray-300 text-sm leading-relaxed">{post.content}</p>
+                  <p className="text-xs text-gray-500 mt-2">
                     {new Date(post.createdAt).toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" })}
                   </p>
                   <CommentSection
@@ -154,7 +156,7 @@ export default async function AthleteProfilePage({ params }: Props) {
         )}
 
         {athlete.courses.length === 0 && athlete.posts.length === 0 && (
-          <div className="text-center py-16 text-gray-400">
+          <div className="text-center py-16 text-gray-500">
             <p>No content published yet.</p>
           </div>
         )}
